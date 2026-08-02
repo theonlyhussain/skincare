@@ -16,26 +16,44 @@ expo-env.d.ts
 *.p8
 *.p12
 *.key
+*.keystore
 *.mobileprovision
 
 # Metro
 .metro-health-check*
 
-# debug
+# debug logs
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+*.log
 
 # macOS
 .DS_Store
 *.pem
 
-# local env files
-.env*.local
+# editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# local env files (commit .env.example, never the real thing)
+.env
+.env.*
+!.env.example
 
 # typescript
 *.tsbuildinfo
 
-# generated native folders
+# generated native folders (EAS prebuild output)
 /ios
 /android
+
+# local build artifacts
+*.apk
+*.aab
+*.apks
+
+# test / coverage output
+coverage/

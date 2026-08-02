@@ -1,5 +1,13 @@
 # SkinCare 🧴
 
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![React Native](https://img.shields.io/badge/React%20Native-0.86-61DAFB?logo=react&logoColor=black)](https://reactnative.dev)
+[![Expo SDK](https://img.shields.io/badge/Expo-SDK%2057-000000?logo=expo&logoColor=white)](https://expo.dev)
+[![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS-6FCF97)](https://expo.dev)
+[![Powered by EAS](https://img.shields.io/badge/Powered%20by-EAS%20Update-4630EB?logo=expo&logoColor=white)](https://expo.dev/eas)
+[![License](https://img.shields.io/github/license/theonlyhussain/skincare)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](https://github.com/theonlyhussain/skincare/pulls)
+
 A local-first skincare tracking app built with **Expo (React Native) + TypeScript**. It uses AI (GLM vision) to score skin condition from photos, analyzes your product shelf, and tracks habits — all on-device, no backend, no accounts, no ads. **You bring your own AI API key.**
 
 ## Features
