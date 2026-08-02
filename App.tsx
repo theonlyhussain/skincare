@@ -1,20 +1,46 @@
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import RootNavigator from './src/navigation';
+import { initDatabase } from './src/db/database';
+import { colors, typography } from './src/theme';
 
 export default function App() {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    initDatabase()
+      .then(() => setReady(true))
+      .catch((e) => {
+        console.error('Database init failed', e);
+        setReady(true); // render anyway; screens surface their own errors
+      });
+  }, []);
+
+  if (!ready) {
+    return (
+      <View style={styles.splash}>
+        <Text style={styles.logo}>SkinCare</Text>
+        <ActivityIndicator color={colors.primary} style={{ marginTop: 12 }} />
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaProvider>
+      <RootNavigator />
+      <StatusBar style="dark" />
+    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  splash: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  logo: { ...typography.title, color: colors.primary },
 });
