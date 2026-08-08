@@ -21,12 +21,28 @@ class PrefsManager(context: Context) {
 
     private val prefs: SharedPreferences = context.getSharedPreferences("skincare_prefs", Context.MODE_PRIVATE)
 
-    fun saveApiKey(key: String) {
-        encryptedPrefs.edit().putString("API_KEY", key).apply()
+    fun saveGlmApiKey(key: String) {
+        encryptedPrefs.edit().putString("GLM_API_KEY", key).apply()
     }
 
-    fun getApiKey(): String? {
-        return encryptedPrefs.getString("API_KEY", null)
+    fun getGlmApiKey(): String? {
+        return encryptedPrefs.getString("GLM_API_KEY", null)
+    }
+
+    fun saveGeminiApiKey(key: String) {
+        encryptedPrefs.edit().putString("GEMINI_API_KEY", key).apply()
+    }
+
+    fun getGeminiApiKey(): String? {
+        return encryptedPrefs.getString("GEMINI_API_KEY", null)
+    }
+
+    fun saveActiveProvider(provider: String) {
+        prefs.edit().putString("ACTIVE_PROVIDER", provider).apply()
+    }
+
+    fun getActiveProvider(): String {
+        return prefs.getString("ACTIVE_PROVIDER", "gemini") ?: "gemini"
     }
 
     fun saveBudget(budget: Float) {

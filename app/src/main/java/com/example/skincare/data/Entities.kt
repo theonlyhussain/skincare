@@ -10,7 +10,9 @@ data class SkinLog(
     val photoUri: String,
     val subscoresJson: String,
     val score: Int,
-    val aiReasoning: String
+    val aiReasoning: String,
+    val suggestionsJson: String,
+    val personalNotes: String = ""
 )
 
 @Entity(tableName = "products")

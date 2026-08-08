@@ -11,7 +11,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.skincare.api.SkinScoringService
+import com.example.skincare.api.AiProvider
+import com.example.skincare.api.GeminiProvider
+import com.example.skincare.api.GlmProvider
 import com.example.skincare.data.AppDatabase
 import com.example.skincare.data.PrefsManager
 import com.example.skincare.data.SkinLog
@@ -43,10 +45,22 @@ fun AnalysisScreen(
         coroutineScope.launch {
             try {
                 val prefs = PrefsManager(context)
-                val apiKey = prefs.getApiKey()
-                if (apiKey.isNullOrEmpty()) {
-                    errorMessage = "API Key not configured. Please set it in Settings."
-                    return@launch
+                val providerName = prefs.getActiveProvider()
+                
+                val provider: AiProvider = if (providerName == "glm") {
+                    val apiKey = prefs.getGlmApiKey()
+                    if (apiKey.isNullOrEmpty()) {
+                        errorMessage = "GLM API Key not configured. Please set it in Settings."
+                        return@launch
+                    }
+                    GlmProvider(apiKey)
+                } else {
+                    val apiKey = prefs.getGeminiApiKey()
+                    if (apiKey.isNullOrEmpty()) {
+                        errorMessage = "Gemini API Key not configured. Please set it in Settings."
+                        return@launch
+                    }
+                    GeminiProvider(apiKey)
                 }
 
                 status = "Processing image..."
@@ -58,8 +72,7 @@ fun AnalysisScreen(
                 }
 
                 status = "Consulting AI..."
-                val service = SkinScoringService(apiKey)
-                val (result, computedScore) = service.analyzeSkin(base64Image)
+                val (result, computedScore) = provider.analyzeSkin(base64Image)
 
                 status = "Saving results..."
                 val db = AppDatabase.getDatabase(context)
@@ -69,7 +82,9 @@ fun AnalysisScreen(
                     photoUri = imageUri,
                     subscoresJson = Gson().toJson(result),
                     score = computedScore,
-                    aiReasoning = result.reasoning
+                    aiReasoning = result.reasoning,
+                    suggestionsJson = Gson().toJson(result.suggestions),
+                    personalNotes = ""
                 )
 
                 withContext(Dispatchers.IO) {

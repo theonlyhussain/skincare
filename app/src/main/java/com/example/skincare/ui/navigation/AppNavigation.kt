@@ -1,7 +1,10 @@
 package com.example.skincare.ui.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
@@ -13,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
@@ -22,17 +26,16 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.skincare.ui.home.HomeScreen
 import com.example.skincare.ui.settings.SettingsScreen
-import com.example.skincare.ui.skinlog.CameraScreen
 import com.example.skincare.ui.skinlog.AnalysisScreen
+import com.example.skincare.ui.skinlog.CameraScreen
 import com.example.skincare.ui.skinlog.SkinLogDetailScreen
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.Alignment
+import com.example.skincare.ui.timeline.TimelineScreen
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector?) {
     object Home : Screen("home", "Home", Icons.Filled.Home)
+    object Timeline : Screen("timeline", "Timeline", Icons.Filled.DateRange)
     object ProductShelf : Screen("product_shelf", "Shelf", Icons.Filled.List)
-    object Habits : Screen("habits", "Habits", Icons.Filled.Person)
+    object Chat : Screen("chat", "Chat", Icons.Filled.Person) // We'll use Person icon for now
     object Settings : Screen("settings", "Settings", Icons.Filled.Settings)
     object Camera : Screen("camera", "Camera", null)
     object Analysis : Screen("analysis/{imageUri}", "Analysis", null)
@@ -45,9 +48,9 @@ fun AppNavigation() {
     
     val bottomNavItems = listOf(
         Screen.Home,
+        Screen.Timeline,
         Screen.ProductShelf,
-        Screen.Habits,
-        Screen.Settings
+        Screen.Chat
     )
 
     Scaffold(
@@ -86,14 +89,17 @@ fun AppNavigation() {
             composable(Screen.Home.route) {
                 HomeScreen(
                     onNavigateToCamera = { navController.navigate(Screen.Camera.route) },
-                    onNavigateToDetail = { logId -> navController.navigate(Screen.Detail.route.replace("{logId}", logId.toString())) }
+                    onNavigateToSettings = { navController.navigate(Screen.Settings.route) }
                 )
+            }
+            composable(Screen.Timeline.route) {
+                TimelineScreen()
             }
             composable(Screen.ProductShelf.route) {
                 PlaceholderScreen("Product Shelf (v2)")
             }
-            composable(Screen.Habits.route) {
-                PlaceholderScreen("Habits (v2)")
+            composable(Screen.Chat.route) {
+                PlaceholderScreen("AI Chat (v2)")
             }
             composable(Screen.Settings.route) {
                 SettingsScreen()
