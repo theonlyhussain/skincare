@@ -105,4 +105,78 @@ class GlmProvider(private val apiKey: String) : AiProvider {
         val score = 100 - severityPenalty - lesionPenalty - rednessPenalty - texturePenalty + hydrationBonus
         return score.coerceIn(0.0, 100.0).roundToInt()
     }
+
+    private val productPrompt = """
+        You are a skincare ingredient analysis assistant. You analyze a photo of a skincare product label (specifically the ingredient list) and output a structured assessment.
+        Always respond with ONLY valid JSON, no preamble, no markdown fences. Follow this exact schema:
+        {
+          "brand": "brand name if visible, else null",
+          "name": "product name if visible, else null",
+          "ingredients": [
+            {
+              "name": "Ingredient Name",
+              "function": "Brief description of its function (e.g., 'moisturizer', 'exfoliant', 'preservative')",
+              "is_active": true | false
+            }
+          ],
+          "warning": "Brief warning if any strictly harmful ingredients like high-concentration denatured alcohol or strong allergens are found. Otherwise null."
+        }
+    """.trimIndent()
+
+    override suspend fun analyzeProduct(base64Image: String): ProductAnalysisResult {
+        val request = GlmRequest(
+            model = "glm-4v",
+            messages = listOf(
+                GlmMessage(
+                    role = "user",
+                    content = listOf(
+                        GlmContent(type = "text", text = productPrompt),
+                        GlmContent(type = "image_url", image_url = GlmImageUrl(url = base64Image))
+                    )
+                )
+            )
+        )
+
+        val response = api.getCompletion("Bearer $apiKey", request)
+        if (!response.isSuccessful) {
+            throw Exception("GLM API Error: ${response.code()} ${response.message()}")
+        }
+
+        val rawText = response.body()?.choices?.firstOrNull()?.message?.content
+            ?: throw Exception("Empty response from GLM API")
+
+        val json = rawText.replace("```json", "").replace("```", "").trim()
+        return gson.fromJson(json, ProductAnalysisResult::class.java)
+    }
+
+    override suspend fun generateChatResponse(context: String, message: String): String {
+        val chatPrompt = """
+            You are a supportive, educational skincare advisor. Answer the user's question.
+            Do NOT diagnose medical conditions or suggest prescription drugs. Recommend seeing a dermatologist if they ask about severe conditions.
+            
+            Here is the user's current skincare context (latest skin logs and product shelf):
+            $context
+        """.trimIndent()
+
+        val request = GlmRequest(
+            model = "glm-4v",
+            messages = listOf(
+                GlmMessage(
+                    role = "user",
+                    content = listOf(
+                        GlmContent(type = "text", text = chatPrompt),
+                        GlmContent(type = "text", text = "User Question: $message")
+                    )
+                )
+            )
+        )
+
+        val response = api.getCompletion("Bearer $apiKey", request)
+        if (!response.isSuccessful) {
+            throw Exception("GLM API Error: ${response.code()} ${response.message()}")
+        }
+
+        return response.body()?.choices?.firstOrNull()?.message?.content
+            ?: throw Exception("Empty response from GLM API")
+    }
 }

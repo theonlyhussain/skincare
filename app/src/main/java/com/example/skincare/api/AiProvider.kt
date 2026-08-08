@@ -39,6 +39,21 @@ data class Suggestions(
     @SerializedName("try_this") val tryThis: List<String>
 )
 
+data class ProductAnalysisResult(
+    val brand: String?,
+    val name: String?,
+    val ingredients: List<IngredientDetail>,
+    val warning: String?
+)
+
+data class IngredientDetail(
+    val name: String,
+    val function: String,
+    val is_active: Boolean
+)
+
 interface AiProvider {
     suspend fun analyzeSkin(base64Image: String): Pair<SkinScoreResult, Int>
+    suspend fun analyzeProduct(base64Image: String): ProductAnalysisResult
+    suspend fun generateChatResponse(context: String, message: String): String
 }

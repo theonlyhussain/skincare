@@ -8,6 +8,8 @@ import androidx.room.RoomDatabase
 @Database(entities = [SkinLog::class, Product::class, HabitLog::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun skinLogDao(): SkinLogDao
+    abstract fun productDao(): ProductDao
+    abstract fun habitLogDao(): HabitLogDao
 
     companion object {
         @Volatile
