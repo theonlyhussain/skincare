@@ -4,8 +4,6 @@
 
 # SkinCare
 
-> **Disclaimer**: **This application is currently under development.** Features may be incomplete, and you might encounter bugs. The UI and underlying data schema are subject to change.
-
 SkinCare is a native Android application built with **Kotlin, Jetpack Compose, and Material 3**. It is a personal skincare-tracking app designed to help you monitor your skin condition over time. It uses AI to score your skin from photos, analyze your skincare products, and track habits, allowing you to track trends seamlessly.
 
 ## Features
